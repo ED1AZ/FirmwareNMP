@@ -18,11 +18,17 @@
 #define ADXL343_REG_POWER_CTL 0x2D
 #define ADXL343_REG_DATA_RATE 0x2C
 
+// struct to access I2C bus through pointer
+typedef struct {
+    I2C_HandleTypeDef *hi2c;
+} ADXL343_t;
+
+// struct for measurements
 typedef struct {
     int16_t x;
     int16_t y;
     int16_t z;
 } adxl343_axes;
 
-HAL_StatusTypeDef adxl343_init(void);
-HAL_StatusTypeDef adxl343_read_axes(adxl343_axes *axes);
+HAL_StatusTypeDef adxl343_init(ADXL343_t *dev, I2C_HandleTypeDef *hi2c);
+HAL_StatusTypeDef adxl343_read_axes(ADXL343_t *dev, adxl343_axes *axes);
