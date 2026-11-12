@@ -8,6 +8,9 @@
 #define BUTTON_Pin GPIO_PIN_0
 #define BUTTON_GPIO_Port GPIOA
 
+#define ACCEL_THRESHOLD_G 1.5f // user-specified magnitude in G's
+#define BUF_LEN 16
+
 // task structure
 typedef struct {
     void (*run)(void);
