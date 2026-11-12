@@ -32,3 +32,5 @@ typedef struct {
 
 HAL_StatusTypeDef adxl343_init(ADXL343_t *dev, I2C_HandleTypeDef *hi2c);
 HAL_StatusTypeDef adxl343_read_axes(ADXL343_t *dev, adxl343_axes *axes);
+HAL_StatusTypeDef adxl343_enable(ADXL343_t *dev);
+HAL_StatusTypeDef adxl343_disable(ADXL343_t *dev);
