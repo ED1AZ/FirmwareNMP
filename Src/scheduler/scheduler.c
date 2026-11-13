@@ -39,7 +39,18 @@ static void task_sample(void) {
 }
 
 static void task_check(void) {
-    // check sensor status
+    // check the acceleration magnitude against the threshold
+    adxl343_axes sample;
+    if (pop(&sample_rb, &sample) == 0) {
+        // magnitude of the acceleration vector = sqrt(x^2 + y^2 + z^2)
+        float magnitude = sqrtf(sample.x * sample.x + sample.y * sample.y + sample.z * sample.z);
+        if (magnitude >= ACCEL_THRESHOLD_G) {
+            // store the sample in the vector ring buffer
+            push_overwrite_oldest(&vector_rb, &sample);
+            // turn on the LED
+            HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+        }
+    }
 }
 
 static void task_print(void) {
