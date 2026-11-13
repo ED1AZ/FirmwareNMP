@@ -58,7 +58,20 @@ static void task_check(void) {
 }
 
 static void task_print(void) {
-    // print acceleration vector
+    // print current acceleration vector, which is newest in vector ring buffer (at head)
+    adxl343_axes sample, latest = {0, 0, 0};
+    uint8_t has_sample = 0;
+    // pop function reads from oldest, so read all samples to get the newest
+    while (pop(&vector_rb, &sample) == 0) {
+        latest = sample;
+        has_sample = 1;
+    }
+    if (has_sample) {
+        printf("Acceleration vector: x=%.3f, y=%.3f, z=%.3f\n",
+                latest.x * ADXL343_G_PER_LSB, 
+                latest.y * ADXL343_G_PER_LSB, 
+                latest.z * ADXL343_G_PER_LSB);
+    }
 }
 
 static task_s tasks[] = {

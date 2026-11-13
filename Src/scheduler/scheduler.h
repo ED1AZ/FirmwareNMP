@@ -9,7 +9,7 @@
 #define BUTTON_GPIO_Port GPIOA
 
 #define ACCEL_THRESHOLD_G 1.5f // user-specified magnitude in G's
-#define ADXL343_G_PER_LSB 0.0039f // full-resolution mode, so 1 LSB = 0.0039 g
+#define ADXL343_G_PER_LSB 0.0039f // full-resolution mode, so 1 LSB = 0.0039 g (1/256 g)
 #define BUF_LEN 16
 #define DEBOUNCE_MS 50
 
