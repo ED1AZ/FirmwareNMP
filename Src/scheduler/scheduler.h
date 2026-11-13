@@ -10,6 +10,7 @@
 
 #define ACCEL_THRESHOLD_G 1.5f // user-specified magnitude in G's
 #define BUF_LEN 16
+#define DEBOUNCE_MS 50
 
 // task structure
 typedef struct {
