@@ -1,6 +1,7 @@
 #include "scheduler.h"
 #include "../drivers/adxl343.h"
 #include "../buffer/buffer.h"
+#include <math.h>
 
 // define drivers + ring buffers
 static ADXL343_t accel;
@@ -41,15 +42,18 @@ static void task_sample(void) {
 static void task_check(void) {
     // check the acceleration magnitude against the threshold
     adxl343_axes sample;
-    if (pop(&sample_rb, &sample) == 0) {
-        // magnitude of the acceleration vector = sqrt(x^2 + y^2 + z^2)
-        float magnitude = sqrtf(sample.x * sample.x + sample.y * sample.y + sample.z * sample.z);
-        if (magnitude >= ACCEL_THRESHOLD_G) {
-            // store the sample in the vector ring buffer
-            push_overwrite_oldest(&vector_rb, &sample);
-            // turn on the LED (active low)
+    while (pop(&sample_rb, &sample) == 0) {
+        // magnitude of the acceleration vector = sqrt(x^2 + y^2 + z^2), then turn into Gs
+        float magnitude = sqrtf(sample.x * sample.x + sample.y * sample.y + sample.z * sample.z) * ADXL343_G_PER_LSB;
+        // store the sample in the vector ring buffer
+        push_overwrite_oldest(&vector_rb, &sample);
+
+        // threshold check for active low LED: RESET = on and SET = off
+        if (magnitude >= ACCEL_THRESHOLD_G) 
             HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-        }
+        else
+            HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+        
     }
 }
 
