@@ -97,7 +97,7 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-
+  tasks_init(&hi2c1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -107,6 +107,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    run_scheduler();
   }
   /* USER CODE END 3 */
 }
