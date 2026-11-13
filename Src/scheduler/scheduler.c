@@ -47,8 +47,8 @@ static void task_check(void) {
         if (magnitude >= ACCEL_THRESHOLD_G) {
             // store the sample in the vector ring buffer
             push_overwrite_oldest(&vector_rb, &sample);
-            // turn on the LED
-            HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+            // turn on the LED (active low)
+            HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
         }
     }
 }
