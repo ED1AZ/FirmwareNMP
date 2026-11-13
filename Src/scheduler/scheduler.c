@@ -12,8 +12,8 @@ static adxl343_axes vector_storage[BUF_LEN];
 static ring_buffer vector_rb;
 
 static void task_sample(void) {
-    uint8_t last_pressed = 0;
-    uint32_t last_change = 0;
+    static uint8_t last_pressed = 0;
+    static uint32_t last_change = 0;
 
     uint8_t pressed = (HAL_GPIO_ReadPin(BUTTON_GPIO_Port, BUTTON_Pin) == GPIO_PIN_RESET);
     uint32_t now = HAL_GetTick();
@@ -97,5 +97,4 @@ void tasks_init(I2C_HandleTypeDef *hi2c) {
     adxl343_init(&accel, hi2c);
     rb_init(&sample_rb, sample_storage, sizeof(adxl343_axes), BUF_LEN);
     rb_init(&vector_rb, vector_storage, sizeof(adxl343_axes), BUF_LEN);
-    sensor_enabled = 1;
 }
