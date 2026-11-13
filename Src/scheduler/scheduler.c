@@ -40,3 +40,10 @@ void run_scheduler(void) {
         }
     }
 }
+
+void tasks_init(I2C_HandleTypeDef *hi2c) {
+    adxl343_init(&accel, hi2c);
+    rb_init(&sample_rb, sample_storage, sizeof(ADXL343_t), BUF_LEN);
+    rb_init(&vector_rb, vector_storage, sizeof(ADXL343_t), BUF_LEN);
+    sensor_enabled = 1;
+}
