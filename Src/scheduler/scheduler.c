@@ -5,13 +5,37 @@
 // define drivers + ring buffers
 static ADXL343_t accel;
 static uint8_t sensor_enabled = 0;
-static ADXL343_t sample_storage[BUF_LEN];
+static adxl343_axes sample_storage[BUF_LEN];
 static ring_buffer sample_rb;
-static ADXL343_t vector_storage[BUF_LEN];
+static adxl343_axes vector_storage[BUF_LEN];
 static ring_buffer vector_rb;
 
 static void task_sample(void) {
-    // sample sensor
+    uint8_t last_pressed = 0;
+    uint32_t last_change = 0;
+
+    uint8_t pressed = (HAL_GPIO_ReadPin(BUTTON_GPIO_Port, BUTTON_Pin) == GPIO_PIN_RESET);
+    uint32_t now = HAL_GetTick();
+
+    // button to toggle sensor enabled state (toggle on press, with debounce)
+    if (pressed && !last_pressed && (now - last_change) >= DEBOUNCE_MS) {
+        sensor_enabled = !sensor_enabled;
+
+        // enable or disable the sensor
+        if (sensor_enabled) adxl343_enable(&accel);
+        else adxl343_disable(&accel);
+        
+        last_change = now;
+    }
+    last_pressed = pressed;
+
+    if (sensor_enabled) {
+        adxl343_axes sample;
+        // read acceleration data from the sensor
+        adxl343_read_axes(&accel, &sample);
+        // store the sample in the sample ring buffer
+        push_overwrite_oldest(&sample_rb, &sample);
+    }
 }
 
 static void task_check(void) {
@@ -43,7 +67,7 @@ void run_scheduler(void) {
 
 void tasks_init(I2C_HandleTypeDef *hi2c) {
     adxl343_init(&accel, hi2c);
-    rb_init(&sample_rb, sample_storage, sizeof(ADXL343_t), BUF_LEN);
-    rb_init(&vector_rb, vector_storage, sizeof(ADXL343_t), BUF_LEN);
+    rb_init(&sample_rb, sample_storage, sizeof(adxl343_axes), BUF_LEN);
+    rb_init(&vector_rb, vector_storage, sizeof(adxl343_axes), BUF_LEN);
     sensor_enabled = 1;
 }
